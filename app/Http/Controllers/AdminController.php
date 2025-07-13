@@ -6,7 +6,7 @@ use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage; // Pastikan ini diimpor
+use Illuminate\Support\Facades\Storage;
 use Exception;
 
 class AdminController extends Controller
@@ -81,7 +81,7 @@ class AdminController extends Controller
             // Ambil path relatif dari database (yang seharusnya sudah relatif)
             $profilePictureRelativePath = $admin->profile_picture;
             // Selalu generate URL lengkap saat mengembalikan ke frontend
-            $profilePictureFullUrl = $profilePictureRelativePath ? Storage::url($profilePictureRelativePath) : null; // <--- PERBAIKAN: Selalu gunakan Storage::url()
+            $profilePictureFullUrl = $profilePictureRelativePath ? Storage::url($profilePictureRelativePath) : null;
 
             return response()->json([
                 'message' => 'Data admin berhasil ditemukan',
@@ -103,6 +103,12 @@ class AdminController extends Controller
         }
     }
 
+    /**
+     * Update profil admin
+     *
+     * @param AdminRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateAdminProfile(AdminRequest $request)
     {
         try {
@@ -117,6 +123,7 @@ class AdminController extends Controller
                 ], 404);
             }
 
+            // Menyimpan foto profil baru jika ada
             $oldProfilePictureRelativePath = $admin->profile_picture; // Ambil path relatif lama dari DB
             $newProfilePictureRelativePath = null;
 

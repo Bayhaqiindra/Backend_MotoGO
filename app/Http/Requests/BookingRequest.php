@@ -26,6 +26,8 @@ class BookingRequest extends FormRequest
         return [
             'service_id' => 'required|exists:services,service_id', // Memastikan service_id valid di tabel services
             'pickup_location' => 'required|string|max:255', // Memastikan lokasi penjemputan ada dan dalam bentuk string
+            'latitude' => ['required', 'numeric', 'regex:/^(\-?\d+(\.\d+)?)$/'], // Validasi latitude
+            'longitude' => ['required', 'numeric', 'regex:/^(\-?\d+(\.\d+)?)$/'], // Validasi longitude
             'customer_notes' => 'nullable|string|max:255', // Catatan pelanggan opsional
         ];
     }

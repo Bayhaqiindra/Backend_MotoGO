@@ -31,8 +31,9 @@ class SparepartController extends Controller
         ], 201);
     }
 
+
     // Admin: Update sparepart
-    public function updateSparepart(SparepartRequest $request, $id)
+    public function updateSparepart(SparepartRequest $request, $id) // Menggunakan SparepartRequest
     {
         $sparepart = Sparepart::find($id);
         if (!$sparepart) return response()->json(['message' => 'Sparepart tidak ditemukan.'], 404);
@@ -49,6 +50,7 @@ class SparepartController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'stock_quantity' => $request->stock_quantity,
+            // image_url tidak perlu di-update di sini jika sudah diatur di if block di atas
         ]);
 
         return response()->json([
@@ -56,7 +58,6 @@ class SparepartController extends Controller
             'data' => $sparepart,
         ]);
     }
-
     // Admin: Hapus sparepart
     public function deleteSparepart($id)
     {

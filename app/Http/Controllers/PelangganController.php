@@ -166,8 +166,9 @@ class PelangganController extends Controller
                     'id_pelanggan' => $pelanggan->id_pelanggan,
                     'name' => $pelanggan->name,
                     'phone' => $pelanggan->phone,
-                    'address' => $pelanggan->address,
                     'profile_picture' => $fullProfilePictureUrl, // Kirim URL lengkap ke frontend
+                    'address' => $pelanggan->address,
+                    
                 ]
             ], 200);
 

@@ -5,18 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookingRequest;
 use App\Models\Booking;
 use App\Models\Pelanggan;
-use App\Services\GoogleMapsService;
 use Illuminate\Http\Request;
 use Exception;
 
 class BookingController extends Controller
 {
-    protected $googleMapsService;
-
-    public function __construct(GoogleMapsService $googleMapsService)
-    {
-        $this->googleMapsService = $googleMapsService;
-    }
 
     /**
      * Pelanggan membuat booking
@@ -34,20 +27,17 @@ class BookingController extends Controller
                 return response()->json(['message' => 'Pelanggan tidak ditemukan.'], 404);
             }
 
-            $coordinates = $this->googleMapsService->geocodeAddress($request->pickup_location);
-            if (!$coordinates) {
-                return response()->json(['message' => 'Gagal mendapatkan koordinat dari alamat'], 400);
-            }
-
             $booking = new Booking();
             $booking->id_pelanggan = $pelanggan->id_pelanggan;
             $booking->service_id = $request->service_id;
             $booking->status = 'menunggu'; // default status
             $booking->pickup_location = $request->pickup_location;
-            $booking->latitude = $coordinates['latitude'];
-            $booking->longitude = $coordinates['longitude'];
+            $booking->latitude = $request->latitude; // <-- AMBIL LANGSUNG DARI REQUEST
+            $booking->longitude = $request->longitude; 
             $booking->customer_notes = $request->customer_notes;
             $booking->save();
+
+             $booking->load('pelanggan');
 
             return response()->json([
                 'message' => 'Pemesanan berhasil dibuat',
@@ -71,7 +61,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'Pelanggan tidak ditemukan.'], 404);
         }
 
-        $bookings = Booking::where('id_pelanggan', $pelanggan->id_pelanggan)->get();
+        $bookings = Booking::where('id_pelanggan', $pelanggan->id_pelanggan)->with('pelanggan')->get();
         return response()->json($bookings);
     }
 
@@ -80,7 +70,7 @@ class BookingController extends Controller
      */
     public function detailBooking($id)
     {
-        $booking = Booking::find($id);
+        $booking = Booking::with('pelanggan')->find($id);
         if (!$booking) {
             return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
         }
@@ -124,7 +114,7 @@ class BookingController extends Controller
             }
 
             $request->validate([
-                'status' => 'required|in:menunggu,diterima,ditolak,selesai'
+                'status' => 'nullablle|in:menunggu,diterima,ditolak,selesai'
             ]);
 
             $booking = Booking::find($id);
@@ -134,6 +124,8 @@ class BookingController extends Controller
 
             $booking->status = $request->status;
             $booking->save();
+
+            $booking->load('pelanggan');
 
             return response()->json([
                 'message' => 'Status berhasil diperbarui.',

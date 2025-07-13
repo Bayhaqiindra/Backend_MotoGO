@@ -24,7 +24,7 @@ class AdminRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255', // Nama admin harus diisi, berupa string, dan maksimal 255 karakter
+            'name' => 'nullable|string|max:255', // Nama admin harus diisi, berupa string, dan maksimal 255 karakter
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Foto profil opsional, jenis file gambar, maksimal 2MB
         ];
     }

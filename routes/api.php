@@ -25,6 +25,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/confirm-service/{id}', [ServiceConfirmationController::class, 'getConfirmation']);
     Route::get('/spareparts', [SparepartController::class, 'getAllSpareparts']);
     Route::get('/spareparts/{id}', [SparepartController::class, 'getSparepartById']);
+    Route::get('/pelanggan/services', [ServiceController::class, 'getAllServices']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'getTransactionById']);
+    Route::get('/confirm-service/by-booking/{booking_id}', [ServiceConfirmationController::class, 'getConfirmationByBookingId']);
 });
 
 // --- ADMIN ONLY ROUTES ---
@@ -54,6 +57,7 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
 
     // Payment (Admin Verifikasi)
     Route::put('/admin/payment/{id}/verify', [PaymentServiceController::class, 'verifyPayment']);
+    Route::get('/admin/payment', [PaymentServiceController::class, 'allPayments']);
 
     // Spareparts
     Route::post('/admin/spareparts', [SparepartController::class, 'addSparepart']);
@@ -99,6 +103,7 @@ Route::middleware(['auth:api', 'role:pelanggan'])->group(function () {
 
     // Payment (Pelanggan Bayar)
     Route::post('/pelanggan/payment', [PaymentServiceController::class, 'submitPayment']);
+    Route::get('/pelanggan/payment', [PaymentServiceController::class, 'customerPayments']);
 
     // Transaksi Sparepart (Pelanggan Beli)
     Route::post('/pelanggan/transactions', [TransactionController::class, 'beliSparepart']);

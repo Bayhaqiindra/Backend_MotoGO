@@ -101,4 +101,48 @@ class PaymentServiceController extends Controller
         ]);
     }
 
+    /**
+     * Pelanggan: Mendapatkan semua riwayat pembayaran layanan miliknya.
+     */
+    public function customerPayments()
+    {
+        $user = auth()->user();
+        $pelanggan = Pelanggan::where('user_id', $user->user_id)->first();
+
+        if (!$pelanggan) {
+            return response()->json(['message' => 'Data pelanggan tidak ditemukan.'], 404);
+        }
+
+        // Dapatkan semua konfirmasi layanan yang terkait dengan pelanggan ini
+        $confirmationIds = ServiceConfirmation::whereHas('booking', function ($query) use ($pelanggan) {
+            $query->where('id_pelanggan', $pelanggan->id_pelanggan);
+        })->pluck('confirmation_id');
+
+        // Dapatkan semua pembayaran layanan yang terkait dengan konfirmasi tersebut
+        $payments = PaymentService::with([
+            'serviceConfirmation.booking.pelanggan', // Eager load pelanggan dari booking
+            'serviceConfirmation.service'
+        ])
+        ->whereIn('confirmation_id', $confirmationIds)
+        ->orderBy('payment_date', 'desc')
+        ->get();
+
+        return response()->json($payments);
+    }
+
+    /**
+     * Admin: Mendapatkan semua riwayat pembayaran layanan dari semua pelanggan.
+     */
+    public function allPayments()
+    {
+        // Admin dapat melihat semua pembayaran.
+        $payments = PaymentService::with([
+            'serviceConfirmation.booking.pelanggan', // Eager load pelanggan dari booking
+            'serviceConfirmation.service'
+        ])
+        ->orderBy('payment_date', 'desc')
+        ->get();
+
+        return response()->json($payments);
+    }
 }

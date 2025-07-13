@@ -105,4 +105,28 @@ class ServiceConfirmationController extends Controller
 
         return response()->json($confirmation);
     }
+
+    public function getConfirmationByBookingId($booking_id)
+    {
+        // Mencari konfirmasi berdasarkan booking_id, bukan primary key (id)
+        $confirmation = ServiceConfirmation::with(['booking', 'service'])
+                            ->where('booking_id', $booking_id)
+                            ->first(); // Gunakan first() karena seharusnya hanya ada satu konfirmasi per booking
+
+        if (!$confirmation) {
+            return response()->json(['message' => 'Konfirmasi untuk booking ini tidak ditemukan'], 404);
+        }
+
+        // Opsional: Tambahkan validasi jika user yang login adalah pemilik booking
+        $user = auth()->user();
+        if ($user->role->name === 'pelanggan') {
+            $pelanggan = \App\Models\Pelanggan::where('user_id', $user->user_id)->first();
+            if (!$pelanggan || $confirmation->booking->id_pelanggan !== $pelanggan->id_pelanggan) {
+                return response()->json(['message' => 'Akses ditolak. Konfirmasi bukan milik Anda.'], 403);
+            }
+        }
+
+
+        return response()->json($confirmation);
+    }
 }

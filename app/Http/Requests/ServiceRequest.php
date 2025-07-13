@@ -24,8 +24,8 @@ class ServiceRequest extends FormRequest
     public function rules()
     {
         return [
-            'service_name' => 'required|string|max:255',
-            'service_cost' => 'required|numeric|min:0',
+            'service_name' => 'nullable|string|max:255',
+            'service_cost' => 'nullable|numeric|min:0',
         ];
     }
 

@@ -73,4 +73,23 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function getTransactionById($id)
+    {
+        $transaction = Transaction::with(['user', 'sparepart'])->find($id);
+
+        if (!$transaction) {
+            return response()->json(['message' => 'Transaksi tidak ditemukan.'], 404);
+        }
+
+        // Opsional: Jika hanya pelanggan yang boleh melihat transaksinya sendiri
+        // if (Auth::check() && Auth::user()->role === 'pelanggan' && $transaction->user_id !== Auth::user()->user_id) {
+        //     return response()->json(['message' => 'Anda tidak diizinkan melihat transaksi ini.'], 403);
+        // }
+
+        return response()->json([
+            'message' => 'Detail transaksi berhasil dimuat.',
+            'data' => $transaction,
+        ]);
+    }
+
 }

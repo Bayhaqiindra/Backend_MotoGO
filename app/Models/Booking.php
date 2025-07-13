@@ -29,7 +29,7 @@ class Booking extends Model
     // Relasi dengan model User (pelanggan)
     public function pelanggan()
     {
-        return $this->belongsTo(User::class, 'id_pelanggan');
+        return $this->belongsTo(pelanggan::class, 'id_pelanggan');
     }
 
     // Relasi dengan model Service
@@ -37,4 +37,5 @@ class Booking extends Model
     {
         return $this->belongsTo(Service::class, 'service_id');
     }
+    
 }

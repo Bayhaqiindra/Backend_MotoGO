@@ -26,7 +26,7 @@ class ServiceConfirmationRequest extends FormRequest
         return [
             'booking_id' => 'required|exists:bookings,booking_id',
             'service_id' => 'required|exists:services,service_id',
-            'service_status' => 'required|string|in:menunggu,dalam_pekerjaan,selesai,dibatalkan',
+            'service_status' => 'nullable|string|in:menunggu,dalam_pekerjaan,selesai,dibatalkan',
             'total_cost' => 'required|numeric|min:0',
             'admin_notes' => 'nullable|string',
         ];
